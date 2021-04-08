@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">    
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="shortcut icon" href="data:image/x-icon;," type="image/x-icon">
+<style>
+body {font-family: Arial, Helvetica, sans-serif;}
+* {box-sizing: border-box;}
+
+input[type=text], textarea, input[type=file]{
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+  margin-top: 6px;
+  margin-bottom: 16px;
+  resize: vertical;
+}
+
+input[type=button] {
+  background-color: #4CAF50;
+  color: white;
+  padding: 12px 20px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+input[type=button]:hover {
+  background-color: #45a049;
+}
+
+.container {
+  border-radius: 5px;
+  background-color: #f2f2f2;
+  padding: 20px;
+}
+
+textarea{
+  height: 100px;
+
+}
+
+#preview{
+  width: 200px;
+}
+
+</style>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="https://cdn.ckeditor.com/4.16.0/standard/ckeditor.js"></script>
+<script>
+var filename;
+/*Jquery의 문법 형식  (누구를).어떻게 , 누구를 자리에 올수있는 요소?
+CSS의 selector가 올수 있다..
+*/    
+$(function(){ //onLoad되면....
+  $("#pic").on("change", function(){
+    var str = $(this).val();
+    filename = str.substring(str.lastIndexOf("\\")+1, str.length);
+
+  });
+  //편집기 입히기~!
+  CKEDITOR.replace("content");
+  //수정하기
+  $($("input[type='button']")[0]).click(function(){
+    edit();
+  });
+  //삭제하기
+  $($("input[type='button']")[1]).click(function(){ 
+    del();
+  });
+  //목록가기
+  $($("input[type='button']")[2]).click(function(){ //목록 버튼
+    getList();
+  });
+  
+  //이미지 선택시
+  $("input[type='file']").on("change", function(e){
+    var str = $(this).val();
+    var filename = str.substring(str.lastIndexOf("\\")+1, str.length);
+    $("#preview").attr("src", "http://localhost:9999/image/"+filename);
+
+  });
+});
+
+function regist(){
+  //폼태그의 속성을 설정
+  $("form").attr("action", "/gallery/regist"); //url은 개발자가 정한다, 단 서버랑 짝을 맞추자
+  $("form").attr("method", "post");
+  //텍스트가 아닌 바이너리 형식도 포함되어 있음을 명시해야한다.
+  //이 속성을 지정하지 않으면 바이너리 파일 전송은 절대 불가능
+  $("form").attr("enctype", "multipart/form-data");
+  $("form").submit(); //전송행위가 발생
+}
+
+function getList(){
+  location.href = "/gallery/list";
+}
+
+function del(){
+  if(confirm("삭제?")){
+    location.href="/gallery/del?gallery_id=<%=record.gallery_id%>&filename=<%=record.filename%>";
+  }
+}
+
+function edit(){
+  if(confirm("수정하시겠습니까?")){
+    location.href="/gallery/edit?gallery_id="+$("#gallery_id").val()+"&title="+$("#gallery_id").val()+"&content="+$("#content").val()+"&filename="+filename;
+  }
+  //$("form").attr("action", "/gallery/edit"); //url은 개발자가 정한다, 단 서버랑 짝을 맞추자
+  //$("form").attr("method", "post");
+  //텍스트가 아닌 바이너리 형식도 포함되어 있음을 명시해야한다.
+  //이 속성을 지정하지 않으면 바이너리 파일 전송은 절대 불가능
+  //$("form").attr("enctype", "multipart/form-data");
+  //$("form").submit()
+}
+</script>
+</head>
+<body>
+
+<h3>Contact Form</h3>
+
+<div class="container">
+    <!-- 폼태그의 속성 중 action은 이 폼양식을 전송할 대상 서버의 url을 명시할 수 있다 -->
+    <!-- 
+      id 와 name 공통점과 차이점 
+      공통점)  문서내의 요소를 식별하기 위함 
+      차이점)  id-유일해야 함, name-중복허용(배열로 인식)
+                  name은 폼 전송시 전송 파라미터역할을 한다 , 즉 변수 역할을 한다!!!
+                  이때 전송 파라미터로서의 name의 이름은 주로  db의 테이블의 컬럼명과 일치시키는 규칙..
+     -->
+  <form>
+    <input type="hidden" name="gallery_id" value="<%=record.gallery_id%>" id="gallery_id">
+    <img src="/upload/<%=record.filename%>" alt="" style="width: 400px; height: 200px;">
+    <input type="text" name="title" value="<%=record.title%>" id="title">
+    <input type="text" name="writer" value="<%=record.writer%>" id="writer">
+    <textarea name="content" placeholder="something content.." id="content">
+      <%=record.content%>
+    </textarea>
+    <input type="file" name="pic" id="pic">
+    <img src="#" alt="" id="preview">
+    <!-- input 태그의 type중 submit은 디폴트로 전송기능이 포함되어 있기 때문에 
+    클릭만으로도, 전송이 발생함 , 따라서 일반 버튼화시켜놓자 -->
+    <input type="button" value="수정">
+    <input type="button" value="삭제">
+    <input type="button" value="목록">
+  </form>
+</div>
+</body>
+</html>
