@@ -1,0 +1,16 @@
+<script>
+    var num = 4;
+    var flag = true;
+    for(var i = 1; i <= 9; i++){
+        document.write(num);
+        document.write("<br>");
+        if(flag){
+            num--;
+            if(num == 0){
+                flag = !flag;
+            }
+        }else{
+            num++;
+        }
+    }
+    </script>
