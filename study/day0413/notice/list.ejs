@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+table {
+  border-collapse: collapse;
+  border-spacing: 0;
+  width: 100%;
+  border: 1px solid #ddd;
+}
+
+th, td {
+  text-align: left;
+  padding: 16px;
+}
+
+tr:nth-child(even) {
+  background-color: #f2f2f2;
+}
+</style>
+</head>
+<body>
+
+<h2>Zebra Striped Table</h2>
+<table>
+  <tr>
+    <th>제목</th>
+    <th>작성자</th>
+    <th>시간</th>
+    <th>조회수</th>
+  </tr>
+  <%for(var i = 0; i < noticeList.length; i++){%>
+    <%var notice = noticeList[i];%>
+  <tr>
+    <td><a href="/notice/detail?notice_id=<%=notice[0]%>"><%=notice[1]%></a></td>
+    <td><%=notice[2]%></td>
+    <td><%=lib.getyymmdd(notice[4])%></td>
+    <td><%=notice[5]%></td>
+  </tr>
+  <%}%>
+
+</table>
+</body>
+</html>
